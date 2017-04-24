@@ -7,19 +7,34 @@
 //
 
 import UIKit
+import MapKit
+import CoreData
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var mapView: MKMapView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let gestureRecogoniser = UITapGestureRecognizer(target: self, action: #selector(handleTap(_: )))
+        gestureRecogoniser.delegate = self
+        mapView.addGestureRecognizer(gestureRecogoniser)
         // Do any additional setup after loading the view, typically from a nib.
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
-
+extension ViewController : UIGestureRecognizerDelegate
+{
+    func handleTap(_ gestureRecogoniser : UILongPressGestureRecognizer )
+    {
+    
+        let location = gestureRecogoniser.location(in: mapView)
+        let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+        Alert().showAlert(self,"\(location)")
+        
+        //add Annotation
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        self.mapView.addAnnotation(annotation)
+    }
+}
