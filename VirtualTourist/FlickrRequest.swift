@@ -1,5 +1,5 @@
 //
-//  flickrRequest.swift
+//  FlickrRequest.swift
 //  VirtualTourist
 //
 //  Created by Sahil Dhawan on 25/04/17.
@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class flickrRequest: NSObject {
+class FlickrRequest: NSObject {
     
     func getImagesFromFlickr(_ coordinate : CLLocationCoordinate2D, completionHandler:@escaping(_ data : Data?,_ error : Error?)-> Void)
     {
@@ -37,6 +37,7 @@ class flickrRequest: NSObject {
             flickrDict[flickrConstants.queryNames.bbox] = bbox(coordinate)
             flickrDict[flickrConstants.queryNames.search] = flickrConstants.queryValues.safeSearch
             flickrDict[flickrConstants.queryNames.extras] = flickrConstants.queryValues.extras
+            flickrDict[flickrConstants.queryNames.per_page] = flickrConstants.queryValues.per_page
             flickrDict[flickrConstants.queryNames.format] = flickrConstants.queryValues.format
             flickrDict[flickrConstants.queryNames.callback] = flickrConstants.queryValues.callBack
             
