@@ -38,17 +38,17 @@
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="Iby-JW-myS" id="G1o-0H-SEs"/>
-                        <segue destination="eQq-sq-tS4" kind="show" id="Gnv-Yq-my4"/>
+                        <segue destination="eQq-sq-tS4" kind="show" identifier="imageSegue" id="Gnv-Yq-my4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="908" y="793"/>
         </scene>
-        <!--View Controller-->
+        <!--Map Pin View Controller-->
         <scene sceneID="Or7-dx-TUn">
             <objects>
-                <viewController id="eQq-sq-tS4" sceneMemberID="viewController">
+                <viewController id="eQq-sq-tS4" customClass="MapPinViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="EuB-3m-ifv"/>
                         <viewControllerLayoutGuide type="bottom" id="Oop-Ql-y0h"/>

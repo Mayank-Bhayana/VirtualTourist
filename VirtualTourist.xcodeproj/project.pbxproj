@@ -17,6 +17,10 @@
 		BA1880031EAE25FC0081DD85 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1880021EAE25FC0081DD85 /* VirtualTouristUITests.swift */; };
 		BA1880121EAE26150081DD85 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1880111EAE26150081DD85 /* MapKit.framework */; };
 		BA1880141EAE2DAC0081DD85 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1880131EAE2DAC0081DD85 /* Alert.swift */; };
+		BA1880341EAF17C20081DD85 /* mapPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1880331EAF17C20081DD85 /* mapPin.swift */; };
+		BA1880391EAF52C10081DD85 /* MapPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1880381EAF52C10081DD85 /* MapPinViewController.swift */; };
+		BA18803B1EAF5A350081DD85 /* FlickrConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA18803A1EAF5A350081DD85 /* FlickrConstants.swift */; };
+		BA18803D1EAF5C500081DD85 /* flickrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA18803C1EAF5C500081DD85 /* flickrRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +57,10 @@
 		BA1880041EAE25FC0081DD85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA1880111EAE26150081DD85 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		BA1880131EAE2DAC0081DD85 /* Alert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
+		BA1880331EAF17C20081DD85 /* mapPin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mapPin.swift; sourceTree = "<group>"; };
+		BA1880381EAF52C10081DD85 /* MapPinViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapPinViewController.swift; sourceTree = "<group>"; };
+		BA18803A1EAF5A350081DD85 /* FlickrConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrConstants.swift; sourceTree = "<group>"; };
+		BA18803C1EAF5C500081DD85 /* flickrRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = flickrRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,14 +113,10 @@
 		BA187FDE1EAE25FB0081DD85 /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
-				BA187FDF1EAE25FB0081DD85 /* AppDelegate.swift */,
-				BA187FE11EAE25FB0081DD85 /* ViewController.swift */,
-				BA187FE31EAE25FB0081DD85 /* Main.storyboard */,
-				BA1880131EAE2DAC0081DD85 /* Alert.swift */,
 				BA187FE91EAE25FB0081DD85 /* Assets.xcassets */,
-				BA187FEB1EAE25FB0081DD85 /* LaunchScreen.storyboard */,
-				BA187FEE1EAE25FB0081DD85 /* Info.plist */,
-				BA187FE61EAE25FB0081DD85 /* VirtualTourist.xcdatamodeld */,
+				BA1880371EAF525F0081DD85 /* View */,
+				BA1880361EAF525A0081DD85 /* Modal */,
+				BA1880351EAF52530081DD85 /* Controller */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -141,6 +145,38 @@
 				BA1880111EAE26150081DD85 /* MapKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BA1880351EAF52530081DD85 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				BA187FE11EAE25FB0081DD85 /* ViewController.swift */,
+				BA1880381EAF52C10081DD85 /* MapPinViewController.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		BA1880361EAF525A0081DD85 /* Modal */ = {
+			isa = PBXGroup;
+			children = (
+				BA187FE61EAE25FB0081DD85 /* VirtualTourist.xcdatamodeld */,
+				BA187FDF1EAE25FB0081DD85 /* AppDelegate.swift */,
+				BA1880331EAF17C20081DD85 /* mapPin.swift */,
+				BA1880131EAE2DAC0081DD85 /* Alert.swift */,
+				BA18803A1EAF5A350081DD85 /* FlickrConstants.swift */,
+				BA18803C1EAF5C500081DD85 /* flickrRequest.swift */,
+				BA187FEE1EAE25FB0081DD85 /* Info.plist */,
+			);
+			name = Modal;
+			sourceTree = "<group>";
+		};
+		BA1880371EAF525F0081DD85 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BA187FE31EAE25FB0081DD85 /* Main.storyboard */,
+				BA187FEB1EAE25FB0081DD85 /* LaunchScreen.storyboard */,
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -280,8 +316,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA18803B1EAF5A350081DD85 /* FlickrConstants.swift in Sources */,
 				BA187FE21EAE25FB0081DD85 /* ViewController.swift in Sources */,
+				BA18803D1EAF5C500081DD85 /* flickrRequest.swift in Sources */,
 				BA187FE01EAE25FB0081DD85 /* AppDelegate.swift in Sources */,
+				BA1880341EAF17C20081DD85 /* mapPin.swift in Sources */,
+				BA1880391EAF52C10081DD85 /* MapPinViewController.swift in Sources */,
 				BA1880141EAE2DAC0081DD85 /* Alert.swift in Sources */,
 				BA187FE81EAE25FB0081DD85 /* VirtualTourist.xcdatamodeld in Sources */,
 			);
@@ -534,6 +574,7 @@
 				BA1880091EAE25FC0081DD85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BA18800A1EAE25FC0081DD85 /* Build configuration list for PBXNativeTarget "VirtualTouristTests" */ = {
 			isa = XCConfigurationList;
@@ -542,6 +583,7 @@
 				BA18800C1EAE25FC0081DD85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BA18800D1EAE25FC0081DD85 /* Build configuration list for PBXNativeTarget "VirtualTouristUITests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +592,7 @@
 				BA18800F1EAE25FC0081DD85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
