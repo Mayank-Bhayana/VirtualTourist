@@ -24,19 +24,45 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Iby-JW-myS">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                             </mapView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x63-IR-5ZF">
+                                <rect key="frame" x="0.0" y="567" width="375" height="100"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap Pins to Delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ETY-t5-jal">
+                                        <rect key="frame" x="118" y="40" width="139" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="ETY-t5-jal" firstAttribute="centerY" secondItem="x63-IR-5ZF" secondAttribute="centerY" id="n87-fR-2Pp"/>
+                                    <constraint firstItem="ETY-t5-jal" firstAttribute="centerX" secondItem="x63-IR-5ZF" secondAttribute="centerX" id="nio-0y-yDx"/>
+                                    <constraint firstAttribute="height" constant="100" id="ppw-CX-Zwo"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Iby-JW-myS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="5nE-G6-FVn"/>
+                            <constraint firstItem="x63-IR-5ZF" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="5sR-M7-Fje"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Iby-JW-myS" secondAttribute="bottom" id="JRk-nT-34P"/>
+                            <constraint firstAttribute="bottom" secondItem="x63-IR-5ZF" secondAttribute="bottom" id="TT9-xK-AzC"/>
                             <constraint firstAttribute="trailing" secondItem="Iby-JW-myS" secondAttribute="trailing" id="bbt-N9-vOA"/>
+                            <constraint firstAttribute="trailing" secondItem="x63-IR-5ZF" secondAttribute="trailing" id="cV9-ma-RiF"/>
                             <constraint firstItem="Iby-JW-myS" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="nKo-ge-mVV"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="2lq-Ww-LSB">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="CtS-qb-FbJ"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="CtS-qb-FbJ">
+                            <connections>
+                                <action selector="editFunctionPressed:" destination="BYZ-38-t0r" id="99J-Sa-SFq"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="deleteView" destination="x63-IR-5ZF" id="7Oj-Uh-kUc"/>
+                        <outlet property="editButton" destination="CtS-qb-FbJ" id="ly7-kS-pOV"/>
                         <outlet property="mapView" destination="Iby-JW-myS" id="G1o-0H-SEs"/>
                         <segue destination="eQq-sq-tS4" kind="show" identifier="imageSegue" id="Gnv-Yq-my4"/>
                     </connections>
@@ -147,7 +173,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Z5g-UL-fgB" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Hbs-sn-DvG">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Hbs-sn-DvG">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

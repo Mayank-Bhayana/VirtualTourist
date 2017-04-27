@@ -12,4 +12,17 @@ import CoreData
 
 public class MapPin: NSManagedObject {
 
+    convenience init(_ latitude : Double, _ longitude : Double, _ context : NSManagedObjectContext)
+    {
+        if let ent = NSEntityDescription.entity(forEntityName: "MapPin", in: context)
+        {
+            self.init(entity:ent, insertInto:context)
+            self.laitutude = latitude
+            self.longitude = longitude
+        }
+        else
+        {
+            fatalError("Entity does not exist")
+        }
+    }
 }
