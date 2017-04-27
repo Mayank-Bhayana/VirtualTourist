@@ -8,10 +8,14 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class MapPinViewController: UIViewController {
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
+    
+    let photoSet = NSSet()
+    var pin : MapPin? = nil
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -19,11 +23,11 @@ class MapPinViewController: UIViewController {
     
     @IBOutlet weak var noImageLabel: UILabel!
     
-    var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var photoArray : [[String:AnyObject]] = [[:]]
     
     override func viewWillAppear(_ animated: Bool) {
         //MapRegion
+        let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees((pin?.latitude)!), longitude: CLLocationDegrees((pin?.longitude)!))
         let region = MKCoordinateRegionMakeWithDistance(coordinate, 100, 100)
         let setRegion = self.mapView.regionThatFits(region)
         self.mapView.setRegion(setRegion, animated: true)
@@ -32,15 +36,17 @@ class MapPinViewController: UIViewController {
         //No User Interaction
         self.mapView.isUserInteractionEnabled = false
         
-       flickrRequest()
+        flickrRequest()
     }
     
     func flickrRequest()
     {
+        let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees((pin?.latitude)!), longitude: CLLocationDegrees((pin?.longitude)!))
+        
         //flickrRequest
         DispatchQueue.global(qos: .userInitiated).async
             {
-                FlickrRequest().getImagesFromFlickr(self.coordinate) { (data, error) in
+                FlickrRequest().getImagesFromFlickr(coordinate) { (data, error) in
                     if error == nil
                     {
                         do
@@ -85,8 +91,9 @@ class MapPinViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillAppear(animated)
+        super.viewWillAppear(animated)
         self.noImageLabel.isHidden = true
+        self.delegate.saveContext()
     }
     
 }
@@ -99,9 +106,7 @@ extension MapPinViewController : UICollectionViewDataSource
         cell.indicatorView.startAnimating()
         
         DispatchQueue.global(qos: .userInitiated).async {
-            
-            if indexPath.item < self.photoArray.count
-            {
+          
                 let photoDict = self.photoArray[indexPath.item]
                 let imageString : String? = photoDict["url_m"] as? String
                 if let string = imageString
@@ -114,6 +119,12 @@ extension MapPinViewController : UICollectionViewDataSource
                             DispatchQueue.main.async {
                                 
                                 let image = UIImage(data: imageData)
+                                
+                                //Saving data to CoreData
+                                let photo = PhotoAlbum(imageData as NSData,self.delegate.persistentContainer.viewContext)
+                                self.photoSet.adding(photo)
+                                self.pin?.addToPhoto(self.photoSet)
+                                
                                 cell.imageView.image = image
                                 cell.imageView.alpha = 1.0
                                 cell.indicatorView.stopAnimating()
@@ -125,10 +136,10 @@ extension MapPinViewController : UICollectionViewDataSource
                         }
                     }
                 }
-            }
         }
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let dictSize = photoArray.count
         var returnSize : Int = 0
@@ -148,10 +159,12 @@ extension MapPinViewController : UICollectionViewDataSource
             else
             {
                 self.noImageLabel.isHidden = true
-
             }
-
         }
         return returnSize
     }
+}
+extension MapPinViewController : NSFetchedResultsControllerDelegate
+{
+    
 }

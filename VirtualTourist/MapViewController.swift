@@ -130,7 +130,8 @@ extension MapViewController : MKMapViewDelegate
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let controller = segue.destination as! MapPinViewController
-        controller.coordinate = self.coordinate
+        let pin = MapPin(Float(self.coordinate.latitude),Float(self.coordinate.longitude),delegate.persistentContainer.viewContext)
+        controller.pin = pin
     }
 }
 //MARK: UIGestureRecogonizerDelegate
