@@ -16,6 +16,11 @@ class MapPinViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionFlowLayout : UICollectionViewFlowLayout!
     
+    @IBOutlet weak var noImageLabel: UILabel!
+    
+    
+    
+    var i : Int = 0
     
     var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var photoArray : [[String:AnyObject]] = [[:]]
@@ -64,6 +69,17 @@ class MapPinViewController: UIViewController {
         collectionFlowLayout.minimumInteritemSpacing = space
         collectionFlowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
+    
+    @IBAction func newCollectionPressed(_ sender: Any) {
+        i += 15
+        self.collectionView.reloadData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+        self.noImageLabel.isHidden = true
+    }
+    
 }
 extension MapPinViewController : UICollectionViewDataSource
 {
@@ -77,7 +93,7 @@ extension MapPinViewController : UICollectionViewDataSource
             
             if indexPath.item < self.photoArray.count
             {
-                let photoDict = self.photoArray[indexPath.item]
+                let photoDict = self.photoArray[self.i + indexPath.item]
                 let imageString : String? = photoDict["url_m"] as? String
                 if let string = imageString
                 {
@@ -105,6 +121,28 @@ extension MapPinViewController : UICollectionViewDataSource
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 15
+        let dictSize = photoArray.count
+        var returnSize : Int = 0
+        if dictSize > 15
+        {
+            self.noImageLabel.isHidden = true
+            returnSize = 15
+        }
+        else if dictSize < 15
+        {
+            returnSize = dictSize
+            
+            if dictSize == 0
+            {
+                self.noImageLabel.isHidden = false
+            }
+            else
+            {
+                self.noImageLabel.isHidden = true
+
+            }
+
+        }
+        return returnSize
     }
 }

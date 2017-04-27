@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MapViewController.swift
 //  VirtualTourist
 //
 //  Created by Sahil Dhawan on 24/04/17.
@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class ViewController: UIViewController {
+class MapViewController: UIViewController {
     var select : Bool = true
     var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var deletePins : Bool = false
@@ -38,26 +38,26 @@ class ViewController: UIViewController {
     }
     
     @IBAction func editFunctionPressed(_ sender: Any) {
+        // let deleteViewHeight = self.deleteView.frame.height
         if editButton.title == "Edit"
         {
             self.deleteView.isHidden = false
             editButton.title = "Done"
             self.deletePins = true
-        }
+            //self.mapView.frame = CGRect(x: 0, y: 0, width: self.mapView.frame.width, height: self.mapView.frame.height - deleteViewHeight)
             
+        }
         else if editButton.title == "Done"
         {
             self.deleteView.isHidden = true
             editButton.title = "Edit"
             self.deletePins = false
+            //self.mapView.frame = CGRect(x: 0, y: 0, width: self.mapView.frame.width, height: self.mapView.frame.height + deleteViewHeight)
         }
-        
     }
-    
-    
 }
 //MARK: MKMapViewDelegate
-extension ViewController : MKMapViewDelegate
+extension MapViewController : MKMapViewDelegate
 {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseIdentifier = "touristPin"
@@ -90,11 +90,9 @@ extension ViewController : MKMapViewDelegate
         let controller = segue.destination as! MapPinViewController
         controller.coordinate = self.coordinate
     }
-    
-    
 }
 //MARK: UIGestureRecogonizerDelegate
-extension ViewController : UIGestureRecognizerDelegate
+extension MapViewController : UIGestureRecognizerDelegate
 {
     func handleTap(_ gestureRecogoniser : UILongPressGestureRecognizer )
     {
