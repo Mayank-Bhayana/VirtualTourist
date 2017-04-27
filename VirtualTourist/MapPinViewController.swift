@@ -11,6 +11,7 @@ import MapKit
 
 class MapPinViewController: UIViewController {
     
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!

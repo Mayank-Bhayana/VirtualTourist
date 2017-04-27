@@ -15,6 +15,8 @@ class MapViewController: UIViewController {
     var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var deletePins : Bool = false
     
+    let delegate = UIApplication.shared.delegate as! AppDelegate
+    
     @IBOutlet weak var editButton: UIBarButtonItem!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteView: UIView!
@@ -35,10 +37,12 @@ class MapViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.deleteView.isHidden = true
+        
+        fetchPinsFromCoreData()
     }
     
     @IBAction func editFunctionPressed(_ sender: Any) {
-         let deleteViewHeight = self.deleteView.frame.height
+        let deleteViewHeight = self.deleteView.frame.height
         if editButton.title == "Edit"
         {
             self.deleteView.isHidden = false
@@ -49,11 +53,30 @@ class MapViewController: UIViewController {
         }
         else if editButton.title == "Done"
         {
+            delegate.saveContext()
             self.deleteView.isHidden = true
             editButton.title = "Edit"
             self.deletePins = false
             self.mapView.frame.origin.y += deleteViewHeight
-
+            
+        }
+    }
+    
+    func fetchPinsFromCoreData()
+    {
+        let fetchRequest : NSFetchRequest<MapPin> = MapPin.fetchRequest()
+        do
+        {
+            let pins = try delegate.persistentContainer.viewContext.fetch(fetchRequest)
+            for pin in pins
+            {
+                let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees(pin.latitude), longitude: CLLocationDegrees(pin.longitude))
+                self.mapView.addAnnotation(mapPin(coordinate))
+            }
+        }
+        catch
+        {
+            Alert().showAlert(self,"Cannot fetch Pins from CoreData")
         }
     }
 }
@@ -68,7 +91,6 @@ extension MapViewController : MKMapViewDelegate
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
         }
         pinView?.canShowCallout = false
-        pinView?.tintColor = UIColor.red
         pinView?.animatesDrop = true
         return pinView
     }
@@ -83,7 +105,26 @@ extension MapViewController : MKMapViewDelegate
         }
         else
         {
+            let latitude : Double = (view.annotation?.coordinate.latitude)!
+            let longitude : Double = (view.annotation?.coordinate.longitude)!
             mapView.removeAnnotation(view.annotation!)
+            let fetchRequest : NSFetchRequest<MapPin> = MapPin.fetchRequest()
+            let predicate1 = NSPredicate(format: "latitude == %f",latitude)
+            let predicate2 = NSPredicate(format: "longitude == %f",longitude)
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate1,predicate2])
+            do
+            {
+                let pins = try delegate.persistentContainer.viewContext.fetch(fetchRequest)
+                for pin in pins
+                {
+                    delegate.persistentContainer.viewContext.delete(pin)
+                }
+            }
+            catch
+            {
+                Alert().showAlert(self,"cannot delete Map Pin")
+            }
+            
         }
     }
     
@@ -103,6 +144,8 @@ extension MapViewController : UIGestureRecognizerDelegate
             {
                 let location = gestureRecogoniser.location(in: mapView)
                 let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+                let _ = MapPin(Float(coordinate.latitude),Float(coordinate.longitude),delegate.persistentContainer.viewContext)
+                delegate.saveContext()
                 self.mapView.addAnnotation(mapPin(coordinate))
             }
             else

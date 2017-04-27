@@ -2,7 +2,7 @@
 //  MapPin+CoreDataProperties.swift
 //  VirtualTourist
 //
-//  Created by Sahil Dhawan on 26/04/17.
+//  Created by Sahil Dhawan on 27/04/17.
 //  Copyright © 2017 Sahil Dhawan. All rights reserved.
 //
 
@@ -16,8 +16,8 @@ extension MapPin {
         return NSFetchRequest<MapPin>(entityName: "MapPin");
     }
 
-    @NSManaged public var laitutude: Double
-    @NSManaged public var longitude: Double
+    @NSManaged public var latitude: Float
+    @NSManaged public var longitude: Float
     @NSManaged public var photo: NSSet?
 
 }

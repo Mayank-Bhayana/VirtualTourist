@@ -2,7 +2,7 @@
 //  PhotoAlbum+CoreDataProperties.swift
 //  VirtualTourist
 //
-//  Created by Sahil Dhawan on 26/04/17.
+//  Created by Sahil Dhawan on 27/04/17.
 //  Copyright © 2017 Sahil Dhawan. All rights reserved.
 //
 
