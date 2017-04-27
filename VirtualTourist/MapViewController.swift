@@ -38,13 +38,13 @@ class MapViewController: UIViewController {
     }
     
     @IBAction func editFunctionPressed(_ sender: Any) {
-        // let deleteViewHeight = self.deleteView.frame.height
+         let deleteViewHeight = self.deleteView.frame.height
         if editButton.title == "Edit"
         {
             self.deleteView.isHidden = false
             editButton.title = "Done"
             self.deletePins = true
-            //self.mapView.frame = CGRect(x: 0, y: 0, width: self.mapView.frame.width, height: self.mapView.frame.height - deleteViewHeight)
+            self.mapView.frame.origin.y -= deleteViewHeight
             
         }
         else if editButton.title == "Done"
@@ -52,7 +52,8 @@ class MapViewController: UIViewController {
             self.deleteView.isHidden = true
             editButton.title = "Edit"
             self.deletePins = false
-            //self.mapView.frame = CGRect(x: 0, y: 0, width: self.mapView.frame.width, height: self.mapView.frame.height + deleteViewHeight)
+            self.mapView.frame.origin.y += deleteViewHeight
+
         }
     }
 }
