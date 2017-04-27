@@ -37,6 +37,8 @@ class FlickrRequest: NSObject {
             flickrDict[flickrConstants.queryNames.bbox] = bbox(coordinate)
             flickrDict[flickrConstants.queryNames.search] = flickrConstants.queryValues.safeSearch
             flickrDict[flickrConstants.queryNames.extras] = flickrConstants.queryValues.extras
+            flickrDict[flickrConstants.queryNames.per_page] = flickrConstants.queryValues.per_page
+            flickrDict[flickrConstants.queryNames.page] = "\(flickrConstants.queryValues.page)"
             flickrDict[flickrConstants.queryNames.format] = flickrConstants.queryValues.format
             flickrDict[flickrConstants.queryNames.callback] = flickrConstants.queryValues.callBack
             

@@ -25,6 +25,8 @@ struct flickrConstants
         static let extras = "url_m"
         static let format = "json"
         static let callBack = "1"
+        static var page = 1
+        static let per_page = "21"
         
     }
     struct queryNames
@@ -36,6 +38,10 @@ struct flickrConstants
         static let extras = "extras"
         static let format = "format"
         static let callback = "nojsoncallback"
+        static let page = "page"
+        static let per_page = "per_page"
+
+
 
     }
     struct bbox

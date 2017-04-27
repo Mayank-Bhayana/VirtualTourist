@@ -18,10 +18,6 @@ class MapPinViewController: UIViewController {
     
     @IBOutlet weak var noImageLabel: UILabel!
     
-    
-    
-    var i : Int = 0
-    
     var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var photoArray : [[String:AnyObject]] = [[:]]
     
@@ -32,7 +28,14 @@ class MapPinViewController: UIViewController {
         self.mapView.setRegion(setRegion, animated: true)
         self.mapView.addAnnotation(mapPin(coordinate))
         
+        //No User Interaction
+        self.mapView.isUserInteractionEnabled = false
         
+       flickrRequest()
+    }
+    
+    func flickrRequest()
+    {
         //flickrRequest
         DispatchQueue.global(qos: .userInitiated).async
             {
@@ -44,7 +47,9 @@ class MapPinViewController: UIViewController {
                             let dataDict = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! NSDictionary
                             let photoDict = dataDict["photos"] as! [String:AnyObject]
                             self.photoArray = photoDict["photo"] as! [[String : AnyObject]]
-                            self.collectionView.reloadData()
+                            DispatchQueue.main.async {
+                                self.collectionView.reloadData()
+                            }
                         }
                         catch
                         {
@@ -58,20 +63,23 @@ class MapPinViewController: UIViewController {
                 }
         }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
         
         //dimension for collectionViewCell
         let space : CGFloat = 1.0
-        let dimension = (self.collectionView.frame.width-2*space)/3
+        let dimension = (self.view.frame.width-2*space)/3
         collectionFlowLayout.minimumLineSpacing = space
         collectionFlowLayout.minimumInteritemSpacing = space
         collectionFlowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
     @IBAction func newCollectionPressed(_ sender: Any) {
-        i += 15
+        
+        flickrConstants.queryValues.page += 1
+        flickrRequest()
         self.collectionView.reloadData()
     }
     
@@ -93,7 +101,7 @@ extension MapPinViewController : UICollectionViewDataSource
             
             if indexPath.item < self.photoArray.count
             {
-                let photoDict = self.photoArray[self.i + indexPath.item]
+                let photoDict = self.photoArray[indexPath.item]
                 let imageString : String? = photoDict["url_m"] as? String
                 if let string = imageString
                 {
@@ -123,12 +131,12 @@ extension MapPinViewController : UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let dictSize = photoArray.count
         var returnSize : Int = 0
-        if dictSize > 15
+        if dictSize >= 21
         {
             self.noImageLabel.isHidden = true
-            returnSize = 15
+            returnSize = 21
         }
-        else if dictSize < 15
+        else if dictSize < 21
         {
             returnSize = dictSize
             
