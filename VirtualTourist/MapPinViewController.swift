@@ -14,13 +14,16 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
+    
     var pin : MapPin? = nil
+    var select : Bool = false
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionFlowLayout : UICollectionViewFlowLayout!
     
     @IBOutlet weak var noImageLabel: UILabel!
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     
     
     var deletionIndexes : [IndexPath] = []
@@ -41,6 +44,8 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         //No User Interaction
         self.mapView.isUserInteractionEnabled = false
         
+        //Reload collextion View
+        collectionView.reloadData()
         
         //flickrRequest
         flickrRequest()
@@ -79,7 +84,15 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
                                 }
                             }
                             DispatchQueue.main.async {
-                                self.collectionView.reloadData()
+                                do
+                                {
+                                    try self.fetchedResultsController?.performFetch()
+                                    self.collectionView.reloadData()
+                                }
+                                catch
+                                {
+                                    Alert().showAlert(self, "Cannot perform fetch")
+                                }
                             }
                         }
                         catch
@@ -127,10 +140,37 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         }
     }
     
-    @IBAction func newCollectionPressed(_ sender: Any) {
-        
-        flickrConstants.queryValues.page += 1
-        flickrRequest()
+    @IBAction func newCollectionPressed(_ sender: Any)
+    {
+        if self.newCollectionButton.title == "New Collection"
+        {
+            let photos = fetchedResultsController?.fetchedObjects as! [PhotoAlbum]
+            for photo in photos
+            {
+                self.delegate.persistentContainer.viewContext.delete(photo)
+            }
+            flickrConstants.queryValues.page += 1
+            flickrRequest()
+        }
+        else
+        {
+            for index in self.deletionIndexes
+            {
+                let photo = fetchedResultsController?.object(at: index) as! PhotoAlbum
+                delegate.persistentContainer.viewContext.delete(photo)
+                self.newCollectionButton.title = "New Collection"
+            }
+            do
+            {
+                try fetchedResultsController?.performFetch()
+                self.collectionView.reloadData()
+            }
+            catch
+            {
+                Alert().showAlert(self, "Cannot perform fetch")
+            }
+            
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -172,8 +212,18 @@ extension MapPinViewController : UICollectionViewDelegate
 {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! CollectionViewCell
-        cell.imageView.alpha = 0.2
+        cell.contentView.alpha = 0.2
+        cell.alpha = 0.2
         self.deletionIndexes.append(indexPath)
+        self.newCollectionButton.title = "Delete selected Images"
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! CollectionViewCell
+        cell.contentView.alpha = 1.0
+        cell.alpha = 1.0
+        self.deletionIndexes.removeLast()
+        
     }
 }
 

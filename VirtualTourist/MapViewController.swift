@@ -11,7 +11,6 @@ import MapKit
 import CoreData
 
 class MapViewController: UIViewController {
-    var select : Bool = true
     var coordinate = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     var deletePins : Bool = false
     
@@ -96,7 +95,6 @@ extension MapViewController : MKMapViewDelegate
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        self.select = false
         if !deletePins
         {
             let pin = view.annotation as! mapPin
@@ -141,7 +139,7 @@ extension MapViewController : UIGestureRecognizerDelegate
     {
         if !deletePins
         {
-            if select
+            if gestureRecogoniser.state == UIGestureRecognizerState.ended
             {
                 let location = gestureRecogoniser.location(in: mapView)
                 let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
@@ -149,10 +147,8 @@ extension MapViewController : UIGestureRecognizerDelegate
                 delegate.saveContext()
                 self.mapView.addAnnotation(mapPin(coordinate))
             }
-            else
-            {
-                select = true
-            }
+           
+        
         }
     }
 }
