@@ -11,12 +11,13 @@ import CoreData
 
 
 public class PhotoAlbum: NSManagedObject {
-    convenience init(_ imageData : NSData , _ context : NSManagedObjectContext)
+    convenience init(_ imageData : NSData , _ pin : MapPin , _ context : NSManagedObjectContext)
     {
         if let ent = NSEntityDescription.entity(forEntityName: "PhotoAlbum", in: context)
         {
             self.init(entity : ent , insertInto : context)
             self.image = imageData
+            self.location = pin
         }
         else
         {

@@ -40,6 +40,10 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         
         //No User Interaction
         self.mapView.isUserInteractionEnabled = false
+        
+        
+        //flickrRequest
+        flickrRequest()
     }
     
     func flickrRequest()
@@ -68,7 +72,7 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
                                     {
                                         if let imageData = try? Data(contentsOf: imageUrl!)
                                         {
-                                            let _ = PhotoAlbum(imageData as NSData,self.delegate.persistentContainer.viewContext)
+                                            let _ = PhotoAlbum(imageData as NSData,self.pin!,self.delegate.persistentContainer.viewContext)
                                             self.delegate.saveContext()
                                         }
                                     }
@@ -127,7 +131,6 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         
         flickrConstants.queryValues.page += 1
         flickrRequest()
-        self.collectionView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -136,6 +139,7 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
     }
     
 }
+
 extension MapPinViewController : UICollectionViewDataSource
 {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -145,29 +149,25 @@ extension MapPinViewController : UICollectionViewDataSource
         cell.indicatorView.startAnimating()
         
         DispatchQueue.global(qos: .userInitiated).async {
-           //To check if the pin already contains a set of photos
-            if (self.fetchedResultsController?.fetchedObjects) != nil
-            {
-                let imageData = self.fetchedResultsController?.object(at: indexPath) as! PhotoAlbum
-                DispatchQueue.main.async {
-                    let image = UIImage(data: imageData.image as! Data)
-                    
-                    cell.imageView.image = image
-                    cell.imageView.alpha = 1.0
-                    cell.indicatorView.stopAnimating()
-                }
+            
+            let imageData = self.fetchedResultsController?.object(at: indexPath) as! PhotoAlbum
+            DispatchQueue.main.async {
+                let image = UIImage(data: imageData.image as! Data)
+                
+                cell.imageView.image = image
+                cell.imageView.alpha = 1.0
+                cell.indicatorView.stopAnimating()
             }
-            else
-            {
-                self.flickrRequest()
-            }
+            
         }
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return (fetchedResultsController?.sections?.count)!
+        return (self.fetchedResultsController?.fetchedObjects?.count)!
     }
 }
+
 extension MapPinViewController : UICollectionViewDelegate
 {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
