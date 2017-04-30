@@ -27,7 +27,7 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
     
     
     var deletionIndexes : [IndexPath] = []
-    
+    var imageDataArray : [ Data] = []
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>? = nil
     
     override func viewWillAppear(_ animated: Bool) {
@@ -41,8 +41,10 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         self.mapView.setRegion(setRegion, animated: true)
         self.mapView.addAnnotation(mapPin(coordinate))
         
+        
         //No User Interaction
         self.mapView.isUserInteractionEnabled = false
+        self.newCollectionButton.isEnabled = false
         
         //Reload collextion View
         collectionView.reloadData()
@@ -77,23 +79,17 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
                                     {
                                         if let imageData = try? Data(contentsOf: imageUrl!)
                                         {
-                                            let _ = PhotoAlbum(imageData as NSData,self.pin!,self.delegate.persistentContainer.viewContext)
-                                            self.delegate.saveContext()
+                                            self.imageDataArray.append(imageData)
+                                            DispatchQueue.main.async {
+                                                self.collectionView.reloadData()
+                                            }
                                         }
                                     }
                                 }
                             }
-                            DispatchQueue.main.async {
-                                do
-                                {
-                                    try self.fetchedResultsController?.performFetch()
-                                    self.collectionView.reloadData()
-                                }
-                                catch
-                                {
-                                    Alert().showAlert(self, "Cannot perform fetch")
-                                }
-                            }
+                            
+                            self.saveToCoreData()
+                            self.newCollectionButton.isEnabled = true
                         }
                         catch
                         {
@@ -140,10 +136,28 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         }
     }
     
+    func saveToCoreData()
+    {
+        for i in 0..<self.imageDataArray.count
+        {
+            let _ = PhotoAlbum(imageDataArray[i] as NSData,self.pin!,self.delegate.persistentContainer.viewContext)
+            self.delegate.saveContext()
+            do
+            {
+                try self.fetchedResultsController?.performFetch()
+            }
+            catch
+            {
+                Alert().showAlert(self, "Cannot perform fetch in saveToCoreData")
+            }
+            Alert().showAlert(self, "Saved to CoreData")
+        }
+    }
     @IBAction func newCollectionPressed(_ sender: Any)
     {
         if self.newCollectionButton.title == "New Collection"
         {
+            self.newCollectionButton.isEnabled = false
             let photos = fetchedResultsController?.fetchedObjects as! [PhotoAlbum]
             for photo in photos
             {
@@ -169,7 +183,6 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
             {
                 Alert().showAlert(self, "Cannot perform fetch")
             }
-            
         }
     }
     
@@ -177,7 +190,6 @@ class MapPinViewController: UIViewController,NSFetchedResultsControllerDelegate 
         super.viewWillAppear(animated)
         self.delegate.saveContext()
     }
-    
 }
 
 extension MapPinViewController : UICollectionViewDataSource
@@ -187,24 +199,41 @@ extension MapPinViewController : UICollectionViewDataSource
         cell.imageView.image = UIImage(named: "VirtualTourist_1024")
         cell.imageView.alpha = 0.2
         cell.indicatorView.startAnimating()
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            
-            let imageData = self.fetchedResultsController?.object(at: indexPath) as! PhotoAlbum
-            DispatchQueue.main.async {
-                let image = UIImage(data: imageData.image as! Data)
+        if (self.fetchedResultsController?.fetchedObjects?.count)! > 0
+        {
+            DispatchQueue.global(qos: .userInitiated).async {
                 
-                cell.imageView.image = image
-                cell.imageView.alpha = 1.0
-                cell.indicatorView.stopAnimating()
+                let imageData = self.fetchedResultsController?.object(at: indexPath) as! PhotoAlbum
+                DispatchQueue.main.async {
+                    let image = UIImage(data: imageData.image as! Data)
+                    
+                    cell.imageView.image = image
+                    cell.imageView.alpha = 1.0
+                    cell.indicatorView.stopAnimating()
+                }
             }
-            
+        }
+        else
+        {
+            let imageData = self.imageDataArray[indexPath.item]
+            cell.imageView.image = UIImage(data:imageData)
+            cell.imageView.alpha = 1.0
+            cell.indicatorView.stopAnimating()
         }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return (self.fetchedResultsController?.fetchedObjects?.count)!
+        
+       let fetchCount = self.fetchedResultsController?.fetchedObjects?.count
+        if fetchCount! > 0
+        {
+            return fetchCount!
+        }
+        else
+        {
+            return self.imageDataArray.count
+        }
     }
 }
 
@@ -217,13 +246,11 @@ extension MapPinViewController : UICollectionViewDelegate
         self.deletionIndexes.append(indexPath)
         self.newCollectionButton.title = "Delete selected Images"
     }
-    
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! CollectionViewCell
         cell.contentView.alpha = 1.0
         cell.alpha = 1.0
         self.deletionIndexes.removeLast()
-        
     }
 }
 

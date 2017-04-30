@@ -23,7 +23,7 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let gestureRecogoniser = UITapGestureRecognizer(target: self, action: #selector(handleTap(_: )))
+        let gestureRecogoniser = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_: )))
         //delegates
         
         gestureRecogoniser.delegate = self
@@ -147,8 +147,6 @@ extension MapViewController : UIGestureRecognizerDelegate
                 delegate.saveContext()
                 self.mapView.addAnnotation(mapPin(coordinate))
             }
-           
-        
         }
     }
 }
