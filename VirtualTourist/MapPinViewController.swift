@@ -98,15 +98,15 @@ class MapPinViewController: UIViewController{
                                             DispatchQueue.main.async {
                                                 self.collectionView.reloadData()
                                             }
-                                                
-                                                do
-                                                {
-                                                    try self.fetchedResultsController?.performFetch()
-                                                }
-                                                catch
-                                                {
-                                                    Alert().showAlert(self, "cannot fetch images")
-                                                }
+                                            
+                                            do
+                                            {
+                                                try self.fetchedResultsController?.performFetch()
+                                            }
+                                            catch
+                                            {
+                                                Alert().showAlert(self, "cannot fetch images")
+                                            }
                                             
                                         }
                                     }
@@ -185,6 +185,7 @@ class MapPinViewController: UIViewController{
                 delegate.persistentContainer.viewContext.delete(photo)
                 self.newCollectionButton.title = "New Collection"
             }
+            deletionIndexes = []
             self.delegate.saveContext()
             self.collectionView.reloadData()
         }
@@ -231,19 +232,31 @@ extension MapPinViewController : UICollectionViewDataSource
 
 extension MapPinViewController : UICollectionViewDelegate
 {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! CollectionViewCell
-        cell.contentView.alpha = 0.2
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+    {
+        let cell = collectionView.cellForItem(at: indexPath) as! CollectionViewCell
         cell.alpha = 0.2
-        self.deletionIndexes.append(indexPath)
-        self.newCollectionButton.title = "Delete selected Images"
+        if cell.selectedCell == true
+        {
+            cell.alpha = 1.0
+            self.deletionIndexes = self.deletionIndexes.filter{$0 != indexPath}
+                cell.selectedCell = false
+        }
+        else
+        {
+            self.deletionIndexes.append(indexPath)
+            cell.selectedCell = true
+        }
+        if self.deletionIndexes.count == 0
+        {
+            self.newCollectionButton.title = "New Collection"
+        }
+        else
+        {
+            self.newCollectionButton.title = "Delete selected Images"
+        }
     }
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "flickrCell", for: indexPath) as! CollectionViewCell
-        cell.contentView.alpha = 1.0
-        cell.alpha = 1.0
-        self.deletionIndexes.removeLast()
-    }
+    
 }
 extension MapPinViewController : NSFetchedResultsControllerDelegate
 {
