@@ -29,7 +29,11 @@ class MapViewController: UIViewController {
         gestureRecogoniser.delegate = self
         mapView.delegate = self
         mapView.addGestureRecognizer(gestureRecogoniser)
-        // Do any additional setup after loading the view, typically from a nib.
+
+    //fetch pins from core Data
+        fetchPinsFromCoreData()
+
+    
     }
     
     
@@ -37,7 +41,6 @@ class MapViewController: UIViewController {
         super.viewWillAppear(animated)
         self.deleteView.isHidden = true
         
-        fetchPinsFromCoreData()
     }
     
     @IBAction func editFunctionPressed(_ sender: Any) {
@@ -122,7 +125,6 @@ extension MapViewController : MKMapViewDelegate
             {
                 Alert().showAlert(self,"cannot delete Map Pin")
             }
-            
         }
     }
     
