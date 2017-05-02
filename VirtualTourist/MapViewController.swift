@@ -20,6 +20,8 @@ class MapViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deleteView: UIView!
     
+    var pin:MapPin? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -98,21 +100,38 @@ extension MapViewController : MKMapViewDelegate
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
+        let latitude : Double = (view.annotation?.coordinate.latitude)!
+        let longitude : Double = (view.annotation?.coordinate.longitude)!
+        let fetchRequest : NSFetchRequest<MapPin> = MapPin.fetchRequest()
+        let predicate1 = NSPredicate(format: "latitude == %f",latitude)
+        let predicate2 = NSPredicate(format: "longitude == %f",longitude)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate1,predicate2])
+        
         if !deletePins
         {
-            let pin = view.annotation as! mapPin
-            self.coordinate = pin.getLocation()
-            self.performSegue(withIdentifier: "imageSegue", sender: self)
+            
+            do
+            {
+                let pins = try delegate.persistentContainer.viewContext.fetch(fetchRequest)
+                for pin in pins
+                {
+                   self.pin = pin
+                }
+                self.performSegue(withIdentifier: "imageSegue", sender: self)
+
+            }
+            catch
+            {
+                Alert().showAlert(self,"cannot delete Map Pin")
+            }
+
         }
         else
         {
-            let latitude : Double = (view.annotation?.coordinate.latitude)!
-            let longitude : Double = (view.annotation?.coordinate.longitude)!
+            
             mapView.removeAnnotation(view.annotation!)
-            let fetchRequest : NSFetchRequest<MapPin> = MapPin.fetchRequest()
-            let predicate1 = NSPredicate(format: "latitude == %f",latitude)
-            let predicate2 = NSPredicate(format: "longitude == %f",longitude)
-            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate1,predicate2])
+            
             do
             {
                 let pins = try delegate.persistentContainer.viewContext.fetch(fetchRequest)
@@ -130,8 +149,8 @@ extension MapViewController : MKMapViewDelegate
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let controller = segue.destination as! MapPinViewController
-        let pin = MapPin(Float(self.coordinate.latitude),Float(self.coordinate.longitude),delegate.persistentContainer.viewContext)
-        controller.pin = pin
+        
+        controller.pin = self.pin
     }
 }
 //MARK: UIGestureRecogonizerDelegate
