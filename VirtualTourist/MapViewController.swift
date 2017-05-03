@@ -31,11 +31,11 @@ class MapViewController: UIViewController {
         gestureRecogoniser.delegate = self
         mapView.delegate = self
         mapView.addGestureRecognizer(gestureRecogoniser)
-
-    //fetch pins from core Data
+        
+        //fetch pins from core Data
         fetchPinsFromCoreData()
-
-    
+        
+        
     }
     
     
@@ -116,16 +116,16 @@ extension MapViewController : MKMapViewDelegate
                 let pins = try delegate.persistentContainer.viewContext.fetch(fetchRequest)
                 for pin in pins
                 {
-                   self.pin = pin
+                    self.pin = pin
                 }
                 self.performSegue(withIdentifier: "imageSegue", sender: self)
-
+                
             }
             catch
             {
                 Alert().showAlert(self,"cannot delete Map Pin")
             }
-
+            
         }
         else
         {
@@ -160,7 +160,7 @@ extension MapViewController : UIGestureRecognizerDelegate
     {
         if !deletePins
         {
-            if gestureRecogoniser.state == UIGestureRecognizerState.ended
+            if gestureRecogoniser.state == UIGestureRecognizerState.began
             {
                 let location = gestureRecogoniser.location(in: mapView)
                 let coordinate = mapView.convert(location, toCoordinateFrom: mapView)

@@ -98,6 +98,15 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <activityIndicatorView key="backgroundView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" id="IPe-Uj-EKJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="384"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="50" id="Zor-TL-Uu3"/>
+                                        <constraint firstAttribute="width" constant="50" id="lDV-HD-w4g"/>
+                                    </constraints>
+                                    <color key="color" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </activityIndicatorView>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="flickrCell" id="23e-W6-xR3" customClass="CollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
@@ -183,6 +192,7 @@
                     <connections>
                         <outlet property="collectionFlowLayout" destination="A17-32-88M" id="nlL-dW-abK"/>
                         <outlet property="collectionView" destination="eNd-ZU-DpK" id="frc-gb-Ywl"/>
+                        <outlet property="imageActivityIndicator" destination="IPe-Uj-EKJ" id="j52-rJ-Tjo"/>
                         <outlet property="mapView" destination="F8r-LL-d7q" id="vhZ-XP-wtk"/>
                         <outlet property="newCollectionButton" destination="4Sh-J3-1sq" id="Rqe-BC-7ei"/>
                         <outlet property="noImageLabel" destination="OWW-3h-ADX" id="nqw-HK-7VF"/>

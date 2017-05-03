@@ -15,9 +15,7 @@ class MapPinViewController: UIViewController{
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
     
-    var pin : MapPin? = nil
-    var select : Bool = false
-    var imageFetched = false
+    @IBOutlet weak var imageActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionFlowLayout : UICollectionViewFlowLayout!
@@ -30,6 +28,10 @@ class MapPinViewController: UIViewController{
     var insertionIndexes = [IndexPath]()
     var updationIndexes = [IndexPath]()
     
+    var pin : MapPin? = nil
+    var select : Bool = false
+    var imageFetched = false
+    var pages : Int = 0
     
     var imageDataArray : [ Data] = []
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>? = nil
@@ -101,6 +103,7 @@ class MapPinViewController: UIViewController{
     //Download images and display
     func flickrRequest()
     {
+        self.imageActivityIndicator.startAnimating()
         let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees((pin?.latitude)!), longitude: CLLocationDegrees((pin?.longitude)!))
         
         //flickrRequest
@@ -113,6 +116,8 @@ class MapPinViewController: UIViewController{
                         {
                             let dataDict = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! NSDictionary
                             let photoDict = dataDict["photos"] as! [String:AnyObject]
+                            self.pages = photoDict["pages"] as! Int
+                            print(self.pages)
                             let photoArray = photoDict["photo"] as! [[String : AnyObject]]
                             print(photoArray.count)
                             for i in 0..<photoArray.count
@@ -120,7 +125,6 @@ class MapPinViewController: UIViewController{
                                 print(i)
                                 let dict = photoArray[i]
                                 let imageString : String? = dict["url_m"] as? String
-                                print("\(i)" + imageString!)
                                 if let string = imageString
                                 {
                                     let imageUrl = URL(string:string)
@@ -137,6 +141,7 @@ class MapPinViewController: UIViewController{
                             self.imageFetched = true
                             DispatchQueue.main.async {
                                 self.saveToCoreData()
+                                self.imageActivityIndicator.startAnimating()
                                 self.newCollectionButton.isEnabled = true
                                 self.collectionView.reloadData()
                             }
@@ -187,10 +192,10 @@ class MapPinViewController: UIViewController{
                 self.delegate.saveContext()
                 self.newCollectionButton.isEnabled = false
             }
-            flickrConstants.queryValues.page += 1
+            
+            flickrConstants.queryValues.page = Int(arc4random_uniform(UInt32(truncatingBitPattern: self.pages)))
             flickrRequest()
         }
-            
         else
         {
             for index in self.deletionIndexes
