@@ -12,4 +12,5 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var indicatorView: UIActivityIndicatorView!
     var selectedCell : Bool = false
+    @IBOutlet weak var selectedImage: UIImageView!
 }

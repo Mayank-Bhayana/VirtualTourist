@@ -69,7 +69,5 @@ class FlickrRequest: NSObject {
             let maxLon = min(longitude+flickrConstants.bbox.bboxWidthDiff,flickrConstants.bbox.longRange.1)
             let string = "\(minLon),\(minLat),\(maxLon),\(maxLat)"
             return string
-            
-            
         }
 }

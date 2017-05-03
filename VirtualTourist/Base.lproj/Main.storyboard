@@ -117,20 +117,30 @@
                                                     </constraints>
                                                     <color key="color" red="0.60000002379999995" green="0.60000002379999995" blue="0.60000002379999995" alpha="1" colorSpace="calibratedRGB"/>
                                                 </activityIndicatorView>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="selection" translatesAutoresizingMaskIntoConstraints="NO" id="WeJ-2m-I5C">
+                                                    <rect key="frame" x="130" y="130" width="20" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="20" id="14e-Xm-zmF"/>
+                                                        <constraint firstAttribute="width" constant="20" id="CEb-Jm-hRs"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                         </view>
                                         <constraints>
                                             <constraint firstItem="azS-cG-xq3" firstAttribute="centerX" secondItem="23e-W6-xR3" secondAttribute="centerX" id="9R2-hB-0NZ"/>
                                             <constraint firstItem="azS-cG-xq3" firstAttribute="centerY" secondItem="23e-W6-xR3" secondAttribute="centerY" id="9p1-uQ-SIX"/>
                                             <constraint firstItem="oH5-yy-8kC" firstAttribute="leading" secondItem="23e-W6-xR3" secondAttribute="leading" id="BIr-UY-j4L"/>
+                                            <constraint firstAttribute="bottom" secondItem="WeJ-2m-I5C" secondAttribute="bottom" id="FsZ-me-aEr"/>
                                             <constraint firstItem="oH5-yy-8kC" firstAttribute="top" secondItem="23e-W6-xR3" secondAttribute="top" id="Fzo-vk-jrt"/>
                                             <constraint firstAttribute="trailing" secondItem="oH5-yy-8kC" secondAttribute="trailing" id="IAM-Jq-i03"/>
+                                            <constraint firstAttribute="trailing" secondItem="WeJ-2m-I5C" secondAttribute="trailing" id="VuP-vh-aBF"/>
                                             <constraint firstAttribute="bottom" secondItem="oH5-yy-8kC" secondAttribute="bottom" id="XFs-cI-S0D"/>
                                         </constraints>
                                         <size key="customSize" width="150" height="150"/>
                                         <connections>
                                             <outlet property="imageView" destination="oH5-yy-8kC" id="JpG-Cj-Xde"/>
                                             <outlet property="indicatorView" destination="azS-cG-xq3" id="sWR-ns-8bR"/>
+                                            <outlet property="selectedImage" destination="WeJ-2m-I5C" id="ojm-Rz-Voa"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -201,4 +211,7 @@
             <point key="canvasLocation" x="136.80000000000001" y="792.95352323838085"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="selection" width="437" height="500"/>
+    </resources>
 </document>
