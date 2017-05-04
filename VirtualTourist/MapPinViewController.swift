@@ -15,7 +15,6 @@ class MapPinViewController: UIViewController{
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
     
-    @IBOutlet weak var imageActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionFlowLayout : UICollectionViewFlowLayout!
@@ -27,13 +26,13 @@ class MapPinViewController: UIViewController{
     var deletionIndexes = [IndexPath]()
     var insertionIndexes = [IndexPath]()
     var updationIndexes = [IndexPath]()
-    
+    var initialLoad : Bool = false
     var pin : MapPin? = nil
     var select : Bool = false
     var imageFetched = false
     var pages : Int = 0
     
-    var imageDataArray : [ Data] = []
+    var imageURLArray : [URL] = []
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>? = nil
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,14 +51,17 @@ class MapPinViewController: UIViewController{
         self.mapView.isUserInteractionEnabled = false
         self.newCollectionButton.isEnabled = false
         
-        //Reload collextion View
-        collectionView.reloadData()
+        
         
         //flickrRequest
         if (self.fetchedResultsController?.fetchedObjects?.count)! == 0
         {
             //Request only if images not exist already
             flickrRequest()
+        }
+        else
+        {
+            self.initialLoad = true
         }
     }
     
@@ -103,7 +105,6 @@ class MapPinViewController: UIViewController{
     //Download images and display
     func flickrRequest()
     {
-        self.imageActivityIndicator.startAnimating()
         let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees((pin?.latitude)!), longitude: CLLocationDegrees((pin?.longitude)!))
         
         //flickrRequest
@@ -117,9 +118,7 @@ class MapPinViewController: UIViewController{
                             let dataDict = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! NSDictionary
                             let photoDict = dataDict["photos"] as! [String:AnyObject]
                             self.pages = photoDict["pages"] as! Int
-                            print(self.pages)
                             let photoArray = photoDict["photo"] as! [[String : AnyObject]]
-                            print(photoArray.count)
                             for i in 0..<photoArray.count
                             {
                                 print(i)
@@ -128,20 +127,11 @@ class MapPinViewController: UIViewController{
                                 if let string = imageString
                                 {
                                     let imageUrl = URL(string:string)
-                                    do
-                                    {
-                                        if let imageData = try? Data(contentsOf: imageUrl!)
-                                        {
-                                            self.imageDataArray.append(imageData)
-                                            let _ = PhotoAlbum(imageData as NSData,self.pin!,self.delegate.persistentContainer.viewContext)
-                                        }
-                                    }
+                                    self.imageURLArray.append(imageUrl!)
                                 }
                             }
                             self.imageFetched = true
                             DispatchQueue.main.async {
-                                self.saveToCoreData()
-                                self.imageActivityIndicator.startAnimating()
                                 self.newCollectionButton.isEnabled = true
                                 self.collectionView.reloadData()
                             }
@@ -160,34 +150,38 @@ class MapPinViewController: UIViewController{
         }
     }
     
-    //Save downloaded images to CoreData
-    func saveToCoreData()
+    
+    
+    func donwloadImagesFromURL(_ imageURL: URL , completionHandler:@escaping(_ data:Data? ,_ errorString : String?)->Void)
     {
-        DispatchQueue.main.async {
-            self.delegate.saveContext()
-            do
+        let session = URLSession.shared
+        let urlRequest = URLRequest(url: imageURL)
+        let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
+            //TODO
+            if error == nil
             {
-                try self.fetchedResultsController?.performFetch()
+                completionHandler(data!,nil)
             }
-            catch
+            else
             {
-                Alert().showAlert(self, "cannot fetch images")
+                completionHandler(nil,error.debugDescription)
             }
         }
+        dataTask.resume()
     }
     
     @IBAction func newCollectionPressed(_ sender: Any)
     {
         if self.newCollectionButton.title == "New Collection"
         {
-            self.imageFetched = false
+            self.initialLoad = false
             let photos = fetchedResultsController?.fetchedObjects
             for photo in photos! as! [PhotoAlbum]
             {
                 self.delegate.persistentContainer.viewContext.delete(photo)
             }
             DispatchQueue.main.async {
-                self.imageDataArray = []
+                self.imageURLArray = []
                 self.collectionView.reloadData()
                 self.delegate.saveContext()
                 self.newCollectionButton.isEnabled = false
@@ -204,10 +198,11 @@ class MapPinViewController: UIViewController{
                 delegate.persistentContainer.viewContext.delete(photo)
                 self.newCollectionButton.title = "New Collection"
             }
-            deletionIndexes = []
             DispatchQueue.main.async {
+                
                 self.delegate.saveContext()
-                self.collectionView.reloadData()
+                self.deletionIndexes = []
+
             }
         }
         do
@@ -230,30 +225,46 @@ extension MapPinViewController : UICollectionViewDataSource
         cell.imageView.image = UIImage(named: "VirtualTourist_1024")
         cell.imageView.alpha = 0.2
         cell.indicatorView.startAnimating()
-        
-        if (self.fetchedResultsController?.fetchedObjects?.count)! > 0
+        cell.selectedImage.isHidden = true
+        if initialLoad
         {
             let imageData = self.fetchedResultsController?.object(at: indexPath) as! PhotoAlbum
             DispatchQueue.main.async {
                 let image = UIImage(data: imageData.image as! Data)
                 
                 cell.imageView.image = image
-                cell.selectedImage.isHidden = true
                 cell.imageView.alpha = 1.0
                 cell.indicatorView.stopAnimating()
             }
         }
             
-        else
+        else if imageURLArray.count > 0
         {
-            let imageData = self.imageDataArray[indexPath.item]
+            let context = self.delegate.persistentContainer.viewContext
             DispatchQueue.main.async {
-                let image = UIImage(data: imageData)
-                
-                cell.imageView.image = image
-                cell.selectedImage.isHidden = true
-                cell.imageView.alpha = 1.0
-                cell.indicatorView.stopAnimating()
+                let imageUrl = self.imageURLArray[indexPath.item]
+                self.donwloadImagesFromURL(imageUrl, completionHandler: { (data, errorString) in
+                    if errorString == nil
+                    {
+                        let _ = PhotoAlbum(NSData(data:data!),self.pin!,context)
+                        self.delegate.saveContext()
+                        cell.imageView.image = UIImage(data: data!)
+                        cell.imageView.alpha = 1.0
+                        cell.indicatorView.stopAnimating()
+                        do
+                        {
+                            try self.fetchedResultsController?.performFetch()
+                        }
+                        catch
+                        {
+                            Alert().showAlert(self, "cannot perform fetch")
+                        }
+                    }
+                    else
+                    {
+                        Alert().showAlert(self, errorString!)
+                    }
+                })
             }
             
         }
@@ -262,7 +273,7 @@ extension MapPinViewController : UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let fetchCount = self.fetchedResultsController?.fetchedObjects?.count
-        let arrayCount = self.imageDataArray.count
+        let arrayCount = self.imageURLArray.count
         if arrayCount > 0
         {
             return arrayCount
@@ -320,6 +331,7 @@ extension MapPinViewController : UICollectionViewDelegate
     }
     
 }
+
 extension MapPinViewController : NSFetchedResultsControllerDelegate
 {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
