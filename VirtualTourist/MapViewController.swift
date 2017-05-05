@@ -119,6 +119,7 @@ extension MapViewController : MKMapViewDelegate
                     self.pin = pin
                 }
                 self.performSegue(withIdentifier: "imageSegue", sender: self)
+                mapView.deselectAnnotation(view.annotation, animated: true)
                 
             }
             catch
