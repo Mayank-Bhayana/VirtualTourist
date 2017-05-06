@@ -179,8 +179,16 @@ class MapPinViewController: UIViewController{
                 self.delegate.saveContext()
                 self.newCollectionButton.isEnabled = false
             }
+            do
+            {
+                try self.fetchedResultsController?.performFetch()
+            }
+            catch
+            {
+                Alert().showAlert(self, "Cannot perform fetch")
+            }
             
-            flickrConstants.queryValues.page = Int(arc4random_uniform(UInt32(truncatingBitPattern: self.pages)))
+            flickrConstants.queryValues.page += 1
             flickrRequest()
         }
         else
@@ -212,17 +220,18 @@ class MapPinViewController: UIViewController{
                 
                 self.collectionView.reloadData()
                 self.delegate.saveContext()
+                do
+                {
+                    try self.fetchedResultsController?.performFetch()
+                }
+                catch
+                {
+                    Alert().showAlert(self, "Cannot perform fetch")
+                }
                 self.deletionIndexes = []
             }
         }
-        do
-        {
-            try fetchedResultsController?.performFetch()
-        }
-        catch
-        {
-            Alert().showAlert(self, "Cannot perform fetch")
-        }
+        
     }
 }
 
@@ -254,7 +263,6 @@ extension MapPinViewController : UICollectionViewDataSource
                 self.donwloadImagesFromURL(imageUrl, completionHandler: { (data, errorString) in
                     if errorString == nil
                     {
-                        
                         do
                         {
                             try self.fetchedResultsController?.performFetch()
@@ -263,12 +271,12 @@ extension MapPinViewController : UICollectionViewDataSource
                         {
                             Alert().showAlert(self, "Cannot fetch image")
                         }
-                        
-                        
-                        let _ = PhotoAlbum(NSData(data:data!),self.pin!,context)
-                        self.delegate.saveContext()
-                        
-                        cell.imageView.image = UIImage(data: data!)
+                        if (self.fetchedResultsController?.fetchedObjects?.count)! < self.imageURLArray.count
+                        {
+                            let _ = PhotoAlbum(NSData(data:data!),self.pin!,context)
+                            self.delegate.saveContext()
+                        }
+                        cell.imageView.image = UIImage(data : data!)
                         cell.imageView.alpha = 1.0
                         cell.indicatorView.stopAnimating()
                     }
